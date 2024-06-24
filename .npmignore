@@ -13,6 +13,7 @@
 .DS_Store
 ._*
 .git
+.gitignore
 .hg
 .lock-wscript
 .npmrc
@@ -27,5 +28,7 @@ src
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+tsconfig.json
+eslint.config.js
 
 
