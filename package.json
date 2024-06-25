@@ -1,5 +1,5 @@
 {
-  "name": "@blurr/react-form",
+  "name": "react-ezform",
   "version": "0.0.1",
   "description": "reactjs form library",
   "main": "dist/index.js",
