@@ -4,13 +4,15 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const { initVal, onSubmit, validate } = args;
 
-    const _state = useRef<T | any>({ ...(initVal ?? {} as T) })
+    const _values = useRef<T | any>({ ...(initVal ?? {} as T) })
 
     const _fieldErrors = useRef<Record<any, string | string[]>>({} as any)
 
     const _childRef = useRef<object | any>({})
 
-    const [refresh , setRefresh] = useState<number>(0);
+    const [isWaiting, setWaiting] = useState<boolean>(false);
+
+    const [refresh, setRefresh] = useState<number>(0);
 
     const handleChange = (e: any) => {
 
@@ -30,12 +32,23 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         }
 
-        if (await runValidation()) {
-            
-            onSubmit(get() as any, ctx)
+        if (await runValidation() === false) return
+
+        setWaiting(true)
+
+        try {
+
+            await onSubmit(get() as any, ctx)
+
+        } catch (err) {
+
+            console.log(err)
+
+        } finally {
+
+            setWaiting(false)
 
         }
-
 
     }
 
@@ -109,7 +122,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     }
 
-    const setErrors = <E extends Record<keyof T | any, string | string[]>>(err: E | ((err:E) => E)) => {
+    const setErrors = <E extends Record<keyof T | any, string | string[]>>(err: E | ((err: E) => E)) => {
 
         if (typeof err === 'function') {
 
@@ -131,6 +144,9 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         if (!err) return false
 
+        //if object -> all errors
+        if (!Array.isArray(err)) return false
+
         const errMsg = Array.isArray(err) ? err[0] : err;
 
         return errMsg;
@@ -139,11 +155,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* FORM reset */
     const reset = (data: any = {}) => {
 
-        set({...initVal, ...data})
-
-        // console.log('reset ran');
-
-        // setState(state => ({...initVal, ...data}))
+        set({ ...initVal, ...data })
 
         trigger()
 
@@ -152,9 +164,9 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* FIELD values get */
     const get = (field?: any) => {
 
-        if (!field) return _state.current;
+        if (!field) return _values.current;
 
-        return _state.current[field];
+        return _values.current[field];
 
     }
 
@@ -165,11 +177,11 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             //wont refresh field component
 
-            _state.current = val;
+            _values.current = val;
 
         } else {
 
-            _state.current[field] = val;
+            _values.current[field] = val;
 
             trigger(field)
 
@@ -190,11 +202,11 @@ export const useForm = <T>(args: FormConfig<T>) => {
     }
 
     /* auto setup props and setup ref */
-    const register = (args:RegisterType) => {     
+    const register = (args: RegisterType) => {
 
         const type = args.type ?? 'text';
 
-        const ref = useRef()
+        const ref = useRef(null)
 
         const props = {
             ...args,
@@ -216,7 +228,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
     } as const
 
     const form = {
-        register,
+        reg:register,
         set,
         values: get(),
         handleChange,
@@ -228,6 +240,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
         errors: getErrors(),
         setErrors: setErrors,
         formatError,
+        isWaiting
     } as const;
 
     return form
@@ -243,19 +256,17 @@ type RegisterType = {
 
 type FormConfig<S> = {
     initVal?: S;
-    onSubmit: (values: S, ctx: UseFormCtx<S>) => void,
+    onSubmit: (values: S, ctx: UseFormCtx<S>) => Promise<void> | void,
     validate?: (values: S) => Record<any, string | string[]> | unknown
 }
 
 
-type UseFormCtx<T> = Omit<UseFormHook<T>, 
-    'formatError' | 
-    'handleOnFocus' | 
-    'handleSubmit' | 
-    'handleChange' | 
-    'handleOnBlur' | 
-    'set' | 
-    'register'
+type UseFormCtx<T> = Pick<UseFormHook<T>,
+    'values' |
+    'reset' |
+    'onSubmit' |
+    'errors' |
+    'setErrors' 
 >
 
 export type UseFormHook<T> = ReturnType<typeof useForm<T>>
