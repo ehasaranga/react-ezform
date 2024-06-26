@@ -17,9 +17,9 @@ export type UseForm = Pick<UseFormHook<any>,
     'isWaiting'
 >
 
-type FormProps = PropsWithChildren & { hook: UseForm }
+export type FormProviderProps = PropsWithChildren & { hook: UseForm }
 
-export const FormProvider: React.FC<FormProps> = ({ children, hook }) => {
+export const FormProvider: React.FC<FormProviderProps> = ({ children, hook }) => {
 
     return (
 
