@@ -12,8 +12,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const [refresh , setRefresh] = useState<number>(0);
 
-    const [fieldErrors, setFieldErrors] = useState<Record<any, string | string[]>>({} as any)
-
     const handleChange = (e: any) => {
 
         const { name, value } = e.target;
@@ -48,7 +46,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         if (!formatError(name)) return;
 
-        setFieldErrors((state) => {
+        setErrors((state) => {
 
             const newState = { ...state }
 
@@ -88,10 +86,12 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
                 const updateVal = name ? { [name]: err[name] } : err
 
-                setFieldErrors(state => ({
-                    ...state,
+                setErrors(errors => ({
+                    ...errors,
                     ...updateVal
                 }))
+
+                trigger(name)
 
                 return resolve(false)
 
@@ -101,17 +101,33 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     }
 
-    const setErrors = (err: Record<any, string | string[]>) => {
+    const getErrors = (field?: any) => {
+
+        if (!field) return _fieldErrors.current;
+
+        return _fieldErrors.current[field]
+
+    }
+
+    const setErrors = <E extends Record<keyof T | any, string | string[]>>(err: E | ((err:E) => E)) => {
+
+        if (typeof err === 'function') {
+
+            _fieldErrors.current = err(_fieldErrors.current as E)
+
+            return;
+
+        }
 
         err = err ?? {};
 
-        setFieldErrors(err)
+        _fieldErrors.current = err
 
     }
 
     const formatError = (fieldName: any) => {
 
-        const err = fieldErrors[fieldName];
+        const err = getErrors(fieldName);
 
         if (!err) return false
 
@@ -130,7 +146,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
         // setState(state => ({...initVal, ...data}))
 
         trigger()
-
 
     }
 
@@ -156,16 +171,20 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             _state.current[field] = val;
 
-            _childRef.current[field].current.refresh()
+            trigger(field)
 
         }
 
     }
 
 
-    /* trigger FORM refresh */
-    const trigger = () => {
+    /* trigger FORM / FIELD refresh */
+    const trigger = (field?: any) => {
 
+        //trigger refresh on field
+        if (field) return _childRef.current[field].current.refresh()
+
+        // trigger refresh on whole form
         setRefresh(val => val + 1)
 
     }
@@ -192,13 +211,12 @@ export const useForm = <T>(args: FormConfig<T>) => {
         values: get(),
         reset,
         onSubmit,
-        errors: fieldErrors,
+        errors: getErrors(),
         setErrors: setErrors,
     } as const
 
     const form = {
         register,
-        refresh,
         set,
         values: get(),
         handleChange,
@@ -207,7 +225,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
         handleOnBlur,
         reset,
         onSubmit,
-        errors: fieldErrors,
+        errors: getErrors(),
         setErrors: setErrors,
         formatError,
     } as const;
@@ -237,8 +255,7 @@ type UseFormCtx<T> = Omit<UseFormHook<T>,
     'handleChange' | 
     'handleOnBlur' | 
     'set' | 
-    'register' | 
-    'refresh'
+    'register'
 >
 
 export type UseFormHook<T> = ReturnType<typeof useForm<T>>
