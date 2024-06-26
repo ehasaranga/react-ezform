@@ -229,7 +229,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
     } as const
 
     const form = {
-        reg:register,
+        register,
         set,
         values: get(),
         handleChange,
