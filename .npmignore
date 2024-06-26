@@ -24,11 +24,13 @@ config.gypi
 node_modules
 npm-debug.log
 
+.changeset
 src
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 tsconfig.json
 eslint.config.js
+
 
 
