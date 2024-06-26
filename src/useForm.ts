@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { Dispatch, SetStateAction, useRef, useState } from "react"
 
 export const useForm = <T>(args: FormConfig<T>) => {
 
@@ -225,6 +225,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
         onSubmit,
         errors: getErrors(),
         setErrors: setErrors,
+        setWaiting
     } as const
 
     const form = {
@@ -267,6 +268,8 @@ type UseFormCtx<T> = Pick<UseFormHook<T>,
     'onSubmit' |
     'errors' |
     'setErrors' 
->
+> & {
+    setWaiting: Dispatch<SetStateAction<boolean>>
+}
 
 export type UseFormHook<T> = ReturnType<typeof useForm<T>>
