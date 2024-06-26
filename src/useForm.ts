@@ -32,7 +32,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         }
 
-        if (await runValidation() === false) return
+        if (await runValidation() === false || isWaiting) return
 
         setWaiting(true)
 
