@@ -25,7 +25,6 @@ dist-ssr
 
 .env
 
-pnpm-lock.yaml
 package-lock.json
 
 trace
