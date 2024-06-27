@@ -23,6 +23,10 @@
   ],
   "author": "Eranda Hasaranga",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ehasaranga/react-ezform"
+  },
   "dependencies": {
     "react": "^18.3.1"
   },
