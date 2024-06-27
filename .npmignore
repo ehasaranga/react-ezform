@@ -24,6 +24,7 @@ config.gypi
 node_modules
 npm-debug.log
 
+.github
 .changeset
 src
 pnpm-lock.yaml
