@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --watch --format cjs,esm --dts",
+    "release": "changeset publish",
     "lint": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
