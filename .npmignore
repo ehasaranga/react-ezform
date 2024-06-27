@@ -31,6 +31,7 @@ package-lock.json
 yarn.lock
 tsconfig.json
 eslint.config.js
+CHANGELOG.md
 
 
 
