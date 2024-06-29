@@ -18,7 +18,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         const { name, value } = e.target;
 
-        set(value, name)
+        setValues(value, name)
 
     }
 
@@ -38,7 +38,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         try {
 
-            await onSubmit(get() as any, ctx)
+            await onSubmit(getValues() as any, ctx)
 
         } catch (err) {
 
@@ -89,7 +89,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             try {
 
-                const errors: any = validate(get())
+                const errors: any = validate(getValues())
 
                 if (Object.keys(errors ?? {}).length) throw errors
 
@@ -155,14 +155,14 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* FORM reset */
     const reset = (data: any = {}) => {
 
-        set({ ...initVal, ...data })
+        setValues({ ...initVal, ...data })
 
         trigger()
 
     }
 
     /* FIELD values get */
-    const get = (field?: any) => {
+    const getValues = (field?: any):T => {
 
         if (!field) return _values.current;
 
@@ -171,7 +171,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
     }
 
     /* FIELD values set */
-    const set = (val: any, field?: any) => {
+    const setValues = (val: any, field?: any) => {
 
         if (typeof field === 'undefined') {
 
@@ -219,10 +219,9 @@ export const useForm = <T>(args: FormConfig<T>) => {
         return props
     }
 
-    const ctx: UseFormCtx<T> = {
-        values: get(),
+    const ctx = {
+        values: getValues(),
         reset,
-        onSubmit,
         errors: getErrors(),
         setErrors: setErrors,
         setWaiting
@@ -230,18 +229,19 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const form = {
         register,
-        set,
-        values: get(),
+
+        set: setValues,
+        values: getValues(),
         handleChange,
         handleSubmit,
         handleOnFocus,
         handleOnBlur,
         reset,
-        onSubmit,
         errors: getErrors(),
         setErrors: setErrors,
         formatError,
         isWaiting
+
     } as const;
 
     return form
@@ -265,7 +265,6 @@ type FormConfig<S> = {
 type UseFormCtx<T> = Pick<UseFormHook<T>,
     'values' |
     'reset' |
-    'onSubmit' |
     'errors' |
     'setErrors' 
 > & {

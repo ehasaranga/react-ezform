@@ -10,7 +10,6 @@ export type UseForm = Pick<UseFormHook<any>,
     'handleOnFocus' |
     'handleOnBlur' |
     'reset' |
-    'onSubmit' |
     'errors' |
     'setErrors' |
     'formatError' |
