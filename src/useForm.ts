@@ -229,7 +229,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const form = {
         register,
-
         set: setValues,
         values: getValues(),
         handleChange,
@@ -250,7 +249,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
 type RegisterType = {
     name: string;
-    label: string;
+    label?: string;
     type?: 'text' | 'password' | 'number' | 'tel';
     required?: boolean;
 }
