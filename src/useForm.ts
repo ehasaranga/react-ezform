@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useRef, useState } from "react"
+import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
+import { register } from "src/register";
 
 export const useForm = <T>(args: FormConfig<T>) => {
 
@@ -16,6 +17,10 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const handleChange = (e: any) => {
 
+        console.log('on Change')
+
+        console.log("name ", e.target.name, ", value ", e.target.value)
+
         const { name, value } = e.target;
 
         setValues(value, name)
@@ -24,6 +29,10 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     /* on FORM submit */
     const handleSubmit = async (e: any) => {
+
+        console.log('on Submit')
+
+        console.log(_values.current)
 
         if (e) {
 
@@ -55,6 +64,8 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* on FIELD submit */
     const handleOnFocus = (e: any) => {
 
+        console.log('on focus')
+
         const name = e.target.name;
 
         if (!formatError(name)) return;
@@ -74,9 +85,13 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* on FIELD blur */
     const handleOnBlur = async (e: any) => {
 
+        console.log('on Blur')
+
         const name = e.target.name;
 
         await runValidation(name)
+
+        console.log(getErrors(name))
 
     }
 
@@ -104,7 +119,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
                     ...updateVal
                 }))
 
-                trigger(name)
+                // trigger(name)
 
                 return resolve(false)
 
@@ -183,8 +198,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             _values.current[field] = val;
 
-            trigger(field)
-
         }
 
     }
@@ -201,24 +214,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     }
 
-    /* auto setup props and setup ref */
-    const register = (args: RegisterType) => {
-
-        const type = args.type ?? 'text';
-
-        const ref = useRef(null)
-
-        const props = {
-            ...args,
-            ref,
-            type
-        }
-
-        _childRef.current[args.name] = ref
-
-        return props
-    }
-
     const ctx = {
         values: getValues(),
         reset,
@@ -228,9 +223,10 @@ export const useForm = <T>(args: FormConfig<T>) => {
     } as const
 
     const form = {
-        register,
+        register: register(_childRef),
         set: setValues,
         values: getValues(),
+        getValues,
         handleChange,
         handleSubmit,
         handleOnFocus,
@@ -239,19 +235,13 @@ export const useForm = <T>(args: FormConfig<T>) => {
         errors: getErrors(),
         setErrors: setErrors,
         formatError,
-        isWaiting
+        isWaiting,
+        _value: _values.current
 
     } as const;
 
     return form
 
-}
-
-type RegisterType = {
-    name: string;
-    label?: string;
-    type?: 'text' | 'password' | 'number' | 'tel';
-    required?: boolean;
 }
 
 type FormConfig<S> = {

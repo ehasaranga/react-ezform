@@ -1,25 +1,21 @@
 import React, { forwardRef, useImperativeHandle, useState } from "react"
 
-export function withField<T extends object>(Comp: React.FC<T>) {
+export const withField = <T extends object>(Comp: React.FC<T>) => forwardRef((props: T, ref) => {
 
-    return forwardRef((props: T, ref) => {
+    const [refresh, setRefresh] = useState<number>(0);
 
-        const [refresh, setRefresh] = useState<number>(0);
+    useImperativeHandle(ref, () => {
 
-        useImperativeHandle(ref, () => {
+        return {
+            refresh: () => {
 
-            return {
-                refresh: () => {
-    
-                    setRefresh(val => val + 1)
-    
-                }
+                setRefresh(val => val + 1)
+
             }
-    
-        })
-
-        return <Comp {...props} />
+        }
 
     })
 
-}
+    return <Comp {...props} />
+
+})
