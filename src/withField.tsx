@@ -1,8 +1,11 @@
-import React, { forwardRef, useImperativeHandle, useState } from "react"
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react"
+import { FieldProps } from "src/register";
 
-export const withField = <T extends object>(Comp: React.FC<T>) => forwardRef((props: T, ref) => {
+export const withField = <T extends FieldProps>(Comp: React.FC<T>) => forwardRef((props: T, ref) => {
 
     const [refresh, setRefresh] = useState<number>(0);
+
+    const [newProps, setNewProps] = useState(props)
 
     useImperativeHandle(ref, () => {
 
@@ -11,11 +14,19 @@ export const withField = <T extends object>(Comp: React.FC<T>) => forwardRef((pr
 
                 setRefresh(val => val + 1)
 
+            },
+            updateProps: (newValue: T) => {
+
+                setNewProps(newValue)
+
             }
         }
 
     })
 
-    return <Comp {...props} />
+    return <Comp {...{
+        ...props,
+        ...newProps,
+    }} />
 
 })

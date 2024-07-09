@@ -1,6 +1,6 @@
 import { ChangeEvent, useRef } from "react";
 
-export const register = (childRef:React.MutableRefObject<any>) => (args: RegisterType) => {
+export const register = (childRef:React.MutableRefObject<any>) => (args: FieldProps) => {
 
     const type = args.type ?? 'text';
 
@@ -18,11 +18,12 @@ export const register = (childRef:React.MutableRefObject<any>) => (args: Registe
 }
 
 
-type RegisterType = {
+export type FieldProps = {
     name: string;
     label?: string;
     type?: 'text' | 'password' | 'number' | 'tel';
     required?: boolean;
+    value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e: ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (e: ChangeEvent<HTMLInputElement>) => void;

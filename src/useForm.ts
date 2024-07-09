@@ -17,9 +17,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const handleChange = (e: any) => {
 
-        console.log('on Change')
-
-        console.log("name ", e.target.name, ", value ", e.target.value)
+        console.log('on Change ', "name ", e.target.name, ", value ", e.target.value)
 
         const { name, value } = e.target;
 
@@ -64,7 +62,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* on FIELD submit */
     const handleOnFocus = (e: any) => {
 
-        console.log('on focus')
+        // console.log('on focus')
 
         const name = e.target.name;
 
@@ -85,13 +83,11 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* on FIELD blur */
     const handleOnBlur = async (e: any) => {
 
-        console.log('on Blur')
-
         const name = e.target.name;
 
         await runValidation(name)
 
-        console.log(getErrors(name))
+        // console.log('on Blur ', getErrors(name))
 
     }
 
@@ -198,6 +194,13 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             _values.current[field] = val;
 
+            if ('refresh' in _childRef.current[field].current) {
+                
+                _childRef.current[field].current.updateProps({ value: val })
+
+            }
+
+
         }
 
     }
@@ -207,7 +210,12 @@ export const useForm = <T>(args: FormConfig<T>) => {
     const trigger = (field?: any) => {
 
         //trigger refresh on field
-        if (field) return _childRef.current[field].current.refresh()
+        if (field) {
+
+            _childRef.current[field].current.refresh()
+
+            return 
+        }
 
         // trigger refresh on whole form
         setRefresh(val => val + 1)
