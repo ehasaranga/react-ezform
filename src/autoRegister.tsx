@@ -40,15 +40,9 @@ export const autoRegChild = (children: ReactNode, hook: UseForm): ReactNode => {
 
             const EnhancedChild = withField(child.type as any);
 
-            // console.log('child ', child)
-            // console.log('child type', child.type)
-            // console.log('reg props ', clonedProps)
+            const WrappedChild = <EnhancedChild {...clonedProps} />
 
-            // const newElement = React.cloneElement(<EnhancedChild />, clonedProps)
-            // const newElement = React.cloneElement(child, clonedProps)
-            const newElement = <EnhancedChild {...clonedProps} />
-
-            return newElement;
+            return WrappedChild;
 
         }
 
