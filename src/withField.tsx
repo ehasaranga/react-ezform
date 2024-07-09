@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react"
 import { FieldProps } from "src/register";
 
-export const withField = <T extends FieldProps>(Comp: React.FC<T>) => forwardRef((props: T, ref) => {
+export const withField = <T extends object>(Comp: React.ComponentType<T>) => forwardRef((props: T, ref) => {
 
     const [refresh, setRefresh] = useState<number>(0);
 
@@ -15,9 +15,9 @@ export const withField = <T extends FieldProps>(Comp: React.FC<T>) => forwardRef
                 setRefresh(val => val + 1)
 
             },
-            updateProps: (newValue: T) => {
+            updateProps: (newProps: T) => {
 
-                setNewProps(newValue)
+                setNewProps(newProps)
 
             }
         }

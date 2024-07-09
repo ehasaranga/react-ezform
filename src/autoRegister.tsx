@@ -1,5 +1,6 @@
 import React, { Children, ReactNode } from "react";
 import { UseForm } from "src/FormProvider";
+import { withField } from "src/withField";
 
 export const autoRegChild = (children: ReactNode, hook: UseForm): ReactNode => {
 
@@ -11,7 +12,13 @@ export const autoRegChild = (children: ReactNode, hook: UseForm): ReactNode => {
 
             const name = child.props.name
 
-            const reg = hook.register({ name: name })
+            const reg = hook.register({ 
+                name: name,
+                value: hook._value[name],
+                onChange: hook.handleChange,
+                onBlur: hook.handleOnBlur,
+                onFocus: hook.handleOnFocus,
+             })
 
             const childProps = child.props.children
                 ? { ...child.props, children: autoRegChild(child.props.children, hook) }
@@ -19,10 +26,6 @@ export const autoRegChild = (children: ReactNode, hook: UseForm): ReactNode => {
 
             const clonedProps = {
                 ...reg,
-                onChange: hook.handleChange,
-                onBlur: hook.handleOnBlur,
-                onFocus: hook.handleOnFocus,
-                value: hook._value[name],
                 ...childProps
             }
 
@@ -35,15 +38,21 @@ export const autoRegChild = (children: ReactNode, hook: UseForm): ReactNode => {
 
             }
 
+            const EnhancedChild = withField(child.type as any);
+
+            // console.log('child ', child)
+            // console.log('child type', child.type)
             // console.log('reg props ', clonedProps)
 
-            const newElement = typeof child.type === 'function' ? React.cloneElement(child, clonedProps) : React.cloneElement(child, clonedProps)
+            // const newElement = React.cloneElement(<EnhancedChild />, clonedProps)
+            // const newElement = React.cloneElement(child, clonedProps)
+            const newElement = <EnhancedChild {...clonedProps} />
 
             return newElement;
 
         }
 
-
+        //when not a field with name and have childrens
         if (child.props.children) {
 
             return React.cloneElement(child, {

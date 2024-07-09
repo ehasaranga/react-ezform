@@ -1,5 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
 import { register } from "src/register";
+import { updateProps } from "src/updateProps";
 
 export const useForm = <T>(args: FormConfig<T>) => {
 
@@ -14,6 +15,8 @@ export const useForm = <T>(args: FormConfig<T>) => {
     const [isWaiting, setWaiting] = useState<boolean>(false);
 
     const [refresh, setRefresh] = useState<number>(0);
+
+    const updateChildProps = updateProps(_childRef)
 
     const handleChange = (e: any) => {
 
@@ -194,17 +197,11 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             _values.current[field] = val;
 
-            if ('refresh' in _childRef.current[field].current) {
-                
-                _childRef.current[field].current.updateProps({ value: val })
-
-            }
-
+            updateChildProps(field, { value: val })
 
         }
 
     }
-
 
     /* trigger FORM / FIELD refresh */
     const trigger = (field?: any) => {
