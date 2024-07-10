@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
 import { register } from "src/register";
 import { updateProps } from "src/updateProps";
 
@@ -28,10 +28,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     /* on FORM submit */
     const handleSubmit = async (e: any) => {
-
-        console.log('on Submit')
-
-        console.log(_values.current)
 
         if (e) {
 
