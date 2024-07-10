@@ -1,5 +1,11 @@
 # react-ezform
 
+## 0.0.4
+
+### Patch Changes
+
+- bafcaaa: auto registering fields, minimize re-renders
+
 ## 0.0.3
 
 ### Patch Changes
