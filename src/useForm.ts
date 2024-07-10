@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { register } from "src/register";
 import { updateProps } from "src/updateProps";
 
@@ -19,8 +19,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
     const updateChildProps = updateProps(_childRef)
 
     const handleChange = (e: any) => {
-
-        console.log('on Change ', "name ", e.target.name, ", value ", e.target.value)
 
         const { name, value } = e.target;
 
@@ -65,19 +63,17 @@ export const useForm = <T>(args: FormConfig<T>) => {
     /* on FIELD submit */
     const handleOnFocus = (e: any) => {
 
-        // console.log('on focus')
-
         const name = e.target.name;
 
         if (!formatError(name)) return;
 
-        setErrors((state) => {
+        setErrors((errors) => {
 
-            const newState = { ...state }
+            delete errors[name];
 
-            delete newState[name];
+            updateChildProps(name, { error: '' })
 
-            return { ...newState }
+            return { ...errors }
 
         })
 
@@ -89,8 +85,6 @@ export const useForm = <T>(args: FormConfig<T>) => {
         const name = e.target.name;
 
         await runValidation(name)
-
-        // console.log('on Blur ', getErrors(name))
 
     }
 
@@ -111,14 +105,12 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
             } catch (err: any) {
 
-                const updateVal = name ? { [name]: err[name] } : err
+                const newError = name ? { [name]: err[name] } : err
 
                 setErrors(errors => ({
                     ...errors,
-                    ...updateVal
+                    ...newError
                 }))
-
-                // trigger(name)
 
                 return resolve(false)
 
@@ -138,17 +130,17 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const setErrors = <E extends Record<keyof T | any, string | string[]>>(err: E | ((err: E) => E)) => {
 
-        if (typeof err === 'function') {
+        const prevError = { ..._fieldErrors.current };
 
-            _fieldErrors.current = err(_fieldErrors.current as E)
+        _fieldErrors.current = typeof err === 'function' ? err(_fieldErrors.current as E) : (err ?? {})
 
-            return;
+        for(let fieldName in _fieldErrors.current) {
+
+            if (JSON.stringify(_fieldErrors.current[fieldName]) === JSON.stringify(prevError[fieldName])) continue;
+
+            updateChildProps(fieldName, { error: _fieldErrors.current[fieldName] })
 
         }
-
-        err = err ?? {};
-
-        _fieldErrors.current = err
 
     }
 
