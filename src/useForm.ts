@@ -8,7 +8,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const _values = useRef<T | any>({ ...(initVal ?? {} as T) })
 
-    const _fieldErrors = useRef<Record<any, string | string[]>>({} as any)
+    const _fieldErrors = useRef<FieldErrors<T>>({} as any)
 
     const _childRef = useRef<object | any>({})
 
@@ -120,7 +120,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         if (!field) return _fieldErrors.current;
 
-        return _fieldErrors.current[field]
+        return _fieldErrors.current[field as keyof T]
 
     }
 
@@ -207,26 +207,27 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     }
 
-    const ctx = {
+    const common = {
         values: getValues(),
         reset,
-        errors: getErrors(),
+        errors: getErrors() as FieldErrors<T>,
         setErrors: setErrors,
+    } as const
+
+    const ctx = {
+        ...common,
         setWaiting
     } as const
 
     const form = {
+        ...common,
         register: register(_childRef),
         set: setValues,
-        values: getValues(),
         getValues,
         handleChange,
         handleSubmit,
         handleOnFocus,
         handleOnBlur,
-        reset,
-        errors: getErrors(),
-        setErrors: setErrors,
         formatError,
         isWaiting,
         _value: _values.current
@@ -254,3 +255,6 @@ type UseFormCtx<T> = Pick<UseFormHook<T>,
 }
 
 export type UseFormHook<T> = ReturnType<typeof useForm<T>>
+
+
+type FieldErrors<T> = Record<keyof T, string | string[]>
