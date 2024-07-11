@@ -1,5 +1,12 @@
 # react-ezform
 
+## 0.0.6
+
+### Patch Changes
+
+- 999ae31: no ref throw error
+- 999ae31: fix hook errors on hot reload
+
 ## 0.0.5
 
 ### Patch Changes
