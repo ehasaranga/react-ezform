@@ -1,18 +1,18 @@
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, createRef, useRef } from "react";
 
 export const register = (childRef:React.MutableRefObject<any>) => (args: FieldProps) => {
 
     const type = args.type ?? 'text';
 
-    const ref = useRef(null)
+    childRef.current[args.name] = childRef.current[args.name] ?? useRef(null)
 
     const props = {
         ...args,
         type,
-        ref
+        ref: childRef.current[args.name]
     }
 
-    childRef.current[args.name] = ref
+    
 
     return props
 }
