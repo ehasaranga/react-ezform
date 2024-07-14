@@ -212,11 +212,11 @@ export const useForm = <T>(args: FormConfig<T>) => {
         reset,
         errors: getErrors() as FieldErrors<T>,
         setErrors: setErrors,
+        setWaiting
     } as const
 
     const ctx = {
         ...common,
-        setWaiting
     } as const
 
     const form = {
