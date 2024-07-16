@@ -8,11 +8,15 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     const _values = useRef<T | any>({ ...(initVal ?? {} as T) })
 
-    const _fieldErrors = useRef<FieldErrors<T>>({} as any)
+    const _fieldErrors = useRef<FieldErrors<T>>({
+        _form: ''
+    } as any)
 
     const _childRef = useRef<object | any>({})
 
     const [isWaiting, setWaiting] = useState<boolean>(false);
+
+    const [msg, setMsg] = useState<string | string[]>();
 
     const [refresh, setRefresh] = useState<number>(0);
 
@@ -65,9 +69,13 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
         setErrors((errors) => {
 
-            delete errors[name];
+            if (name in errors) {
 
-            updateChildProps(name, { error: '' })
+                delete errors[name];
+
+                updateChildProps(name, { error: '' })
+
+            }
 
             return { ...errors }
 
@@ -124,7 +132,7 @@ export const useForm = <T>(args: FormConfig<T>) => {
 
     }
 
-    const setErrors = <E extends Record<keyof T | any, string | string[]>>(err: E | ((err: E) => E)) => {
+    const setErrors = <E extends FieldErrors<T>>(err: E | ((err: E) => E)) => {
 
         const prevError = { ..._fieldErrors.current };
 
@@ -212,7 +220,8 @@ export const useForm = <T>(args: FormConfig<T>) => {
         reset,
         errors: getErrors() as FieldErrors<T>,
         setErrors: setErrors,
-        setWaiting
+        setWaiting, 
+        setMsg
     } as const
 
     const ctx = {
@@ -230,8 +239,8 @@ export const useForm = <T>(args: FormConfig<T>) => {
         handleOnBlur,
         formatError,
         isWaiting,
+        msg,
         _value: _values.current
-
     } as const;
 
     return form
@@ -257,4 +266,6 @@ type UseFormCtx<T> = Pick<UseFormHook<T>,
 export type UseFormHook<T> = ReturnType<typeof useForm<T>>
 
 
-type FieldErrors<T> = Record<keyof T, string | string[]>
+type FieldErrors<T> = Record<keyof T, string | string[]> & {
+    [key: string] : any
+}
