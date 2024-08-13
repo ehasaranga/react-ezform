@@ -1,6 +1,6 @@
 {
   "name": "react-ezform",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "reactjs form library",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
